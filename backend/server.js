@@ -49,12 +49,34 @@ const connectDB = async () => {
 connectDB();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://accounts.google.com'],
+  origin: [
+    'http://localhost:3000', 
+    'http://127.0.0.1:3000', 
+    'https://accounts.google.com',
+    /\.onrender\.com$/,  // Permite todos los dominios de Render
+    process.env.FRONTEND_URL
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(express.json());
+
+// Middleware adicional para CORS
+app.use((req, res, next) => {
+  console.log(`📥 ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    console.log('✅ OPTIONS request handled');
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Ruta de health check
 app.get('/', (req, res) => {
