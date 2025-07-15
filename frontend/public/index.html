@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sistema de Reportes</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/index.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Sistema de Reportes de Ventas" />
+    <title>Sistema de Reportes</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script>
+      // Debug de variables de entorno
+      console.log('🔍 Variables de entorno:');
+      console.log('REACT_APP_API_URL:', '%REACT_APP_API_URL%');
+      console.log('NODE_ENV:', '%NODE_ENV%');
+    </script>
+  </body>
 </html>

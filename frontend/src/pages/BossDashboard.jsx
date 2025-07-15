@@ -32,7 +32,7 @@ function BossDashboard() {
       console.log('Filtros aplicados:', filters);
       console.log('URL de búsqueda:', `http://localhost:5000/api/reports?${params}`);
       
-      const response = await axios.get(`http://localhost:5000/api/reports?${params}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports?${params}`);
       console.log('Reportes recibidos:', response.data);
       setReports(response.data);
     } catch (error) {

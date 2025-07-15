@@ -31,6 +31,8 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     console.log('=== LOGIN MANUAL FRONTEND ===');
     console.log('Email:', email);
+    console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+    console.log('URL final:', `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/login`);
     
     try {
       console.log('Enviando request a backend...');
