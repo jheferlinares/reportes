@@ -23,11 +23,11 @@ function LeaderDashboard() {
 
   const loadReports = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/reports');
+      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports`);
       setExistingReports(response.data);
       
       // Cargar reportes del día seleccionado
-      const dailyResponse = await axios.get(`http://localhost:5000/api/reports?dateFrom=${selectedDate}&dateTo=${selectedDate}`);
+      const dailyResponse = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports?dateFrom=${selectedDate}&dateTo=${selectedDate}`);
       setDailyReports(dailyResponse.data);
       
       // Verificar si el día está bloqueado (tiene reportes guardados)
@@ -55,7 +55,7 @@ function LeaderDashboard() {
 
   const loadEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/employees');
+      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/employees`);
       setEmployees(response.data);
     } catch (error) {
       console.error('Error cargando empleados:', error);
@@ -66,7 +66,7 @@ function LeaderDashboard() {
     if (!newEmployeeName.trim()) return;
     
     try {
-      const response = await axios.post('http://localhost:5000/api/employees', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/employees`, {
         name: newEmployeeName
       });
       
@@ -658,7 +658,7 @@ function LeaderDashboard() {
               <button
                 onClick={async () => {
                   try {
-                    await axios.post('http://localhost:5000/api/reports', {
+                    await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports`, {
                       employeeId: editingReport.employeeId,
                       date: editingReport.date,
                       cantidadVentas: editingReport.cantidadVentas,
