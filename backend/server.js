@@ -11,10 +11,17 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+console.log('=== INICIANDO SERVIDOR ===');
+console.log('Puerto:', PORT);
+console.log('MongoDB URI:', process.env.MONGODB_URI ? 'CONFIGURADO' : 'NO CONFIGURADO');
+console.log('JWT Secret:', process.env.JWT_SECRET ? 'CONFIGURADO' : 'NO CONFIGURADO');
+
 // Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/reportes_sistema')
-  .then(async () => {
-    console.log('Conectado a MongoDB');
+const connectDB = async () => {
+  try {
+    console.log('Intentando conectar a MongoDB...');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/reportes_sistema');
+    console.log('✅ Conectado a MongoDB exitosamente');
     
     // Crear usuario de prueba si no existe
     const bcrypt = require('bcrypt');
@@ -30,10 +37,16 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/reportes_
         active: true
       });
       await newTestUser.save();
-      console.log('Usuario de prueba creado: test@test.com / 123456');
+      console.log('✅ Usuario de prueba creado: test@test.com / 123456');
     }
-  })
-  .catch(err => console.error('Error conectando a MongoDB:', err));
+  } catch (err) {
+    console.error('❌ Error conectando a MongoDB:', err.message);
+    console.error('Stack:', err.stack);
+    process.exit(1);
+  }
+};
+
+connectDB();
 
 app.use(cors({
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://accounts.google.com'],
@@ -42,6 +55,23 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(express.json());
+
+// Ruta de health check
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Servidor de Reportes funcionando correctamente',
+    timestamp: new Date().toISOString(),
+    status: 'OK'
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
 
 // Rutas
 app.use('/api', authRoutes);
@@ -283,6 +313,30 @@ app.get('/api/reports', authenticateToken, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+// Manejo de errores globales
+process.on('uncaughtException', (err) => {
+  console.error('❌ Error no capturado:', err.message);
+  console.error('Stack:', err.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('❌ Promesa rechazada no manejada:', err.message);
+  console.error('Stack:', err.stack);
+  process.exit(1);
+});
+
+// Iniciar servidor
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Servidor corriendo en puerto ${PORT}`);
+  console.log(`🌍 URL: http://localhost:${PORT}`);
+  console.log('✨ Servidor listo para recibir conexiones');
+});
+
+server.on('error', (err) => {
+  console.error('❌ Error del servidor:', err.message);
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Puerto ${PORT} ya está en uso`);
+  }
+  process.exit(1);
 });
