@@ -96,8 +96,8 @@ function Login({ onSwitchToRegister }) {
               src="/logo.png" 
               alt="Logo Empresa" 
               style={{
-                width: '50px', 
-                height: '50px', 
+                width: '90px', 
+                height: '90px', 
                 borderRadius: '8px',
                 objectFit: 'contain'
               }} 
