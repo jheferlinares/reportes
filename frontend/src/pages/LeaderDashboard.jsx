@@ -101,7 +101,8 @@ function LeaderDashboard() {
       const reportPromises = Object.entries(reports).map(([employeeId, reportData]) => {
         if (reportData.cantidadVentas || reportData.montoVentas || reportData.descripcion) {
           console.log('Enviando reporte para empleado:', employeeId, reportData);
-          return axios.post('http://localhost:5000/api/reports', {
+          console.log('Fecha seleccionada:', selectedDate);
+          return axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports`, {
             employeeId: employeeId,
             date: selectedDate,
             ...reportData

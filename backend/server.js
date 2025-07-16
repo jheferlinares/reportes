@@ -223,15 +223,23 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
     console.log('Líder (usuario):', leaderName);
     console.log('Departamento:', req.user.department);
     
-    // Crear fecha sin conversión de zona horaria
-    const reportDate = new Date(date + 'T00:00:00.000Z');
+    // Crear fecha correcta sin desfase de zona horaria
+    const [year, month, day] = date.split('-');
+    const reportDate = new Date(year, month - 1, day); // month - 1 porque Date usa 0-11
+    
+    console.log('Fecha original:', date);
+    console.log('Fecha procesada:', reportDate.toISOString());
+    console.log('Fecha local:', reportDate.toLocaleDateString());
     
     // Verificar si ya existe un reporte para este empleado en esta fecha
+    const startOfDay = new Date(year, month - 1, day, 0, 0, 0);
+    const endOfDay = new Date(year, month - 1, day, 23, 59, 59);
+    
     const existingReport = await Report.findOne({
       employeeId,
       date: {
-        $gte: new Date(date + 'T00:00:00.000Z'),
-        $lt: new Date(date + 'T23:59:59.999Z')
+        $gte: startOfDay,
+        $lte: endOfDay
       },
       leaderId: leaderName
     });
@@ -293,8 +301,14 @@ app.get('/api/reports', authenticateToken, async (req, res) => {
       if (leader) query.leaderId = { $regex: leader, $options: 'i' };
       if (dateFrom || dateTo) {
         query.date = {};
-        if (dateFrom) query.date.$gte = new Date(dateFrom + 'T00:00:00.000Z');
-        if (dateTo) query.date.$lte = new Date(dateTo + 'T23:59:59.999Z');
+        if (dateFrom) {
+          const [year, month, day] = dateFrom.split('-');
+          query.date.$gte = new Date(year, month - 1, day, 0, 0, 0);
+        }
+        if (dateTo) {
+          const [year, month, day] = dateTo.split('-');
+          query.date.$lte = new Date(year, month - 1, day, 23, 59, 59);
+        }
       }
     }
     
