@@ -53,9 +53,75 @@ function Login({ onSwitchToRegister }) {
         
         {/* Contenido nítido */}
         <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <h1 style={{ color: '#fff', marginBottom: '10px' }}>Iniciar Sesión</h1>
-          <p style={{ color: '#fff', fontSize: '16px' }}>Accede a tu cuenta</p>
+        {/* Título principal del sistema */}
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h1 style={{ 
+            color: '#fff', 
+            fontSize: '32px', 
+            fontWeight: 'bold', 
+            marginBottom: '10px',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          }}>
+            SISTEMA DE REPORTES
+          </h1>
+          <div style={{ 
+            width: '60px', 
+            height: '3px', 
+            backgroundColor: '#007bff', 
+            margin: '0 auto 20px auto',
+            borderRadius: '2px'
+          }}></div>
+        </div>
+        
+        {/* Sección de login con logo */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          gap: '20px',
+          marginBottom: '30px'
+        }}>
+          {/* Espacio para logo */}
+          <div style={{
+            width: '60px',
+            height: '60px',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '2px dashed rgba(255, 255, 255, 0.4)'
+          }}>
+            <img 
+              src="/logo.png" 
+              alt="Logo Empresa" 
+              style={{
+                width: '50px', 
+                height: '50px', 
+                borderRadius: '8px',
+                objectFit: 'contain'
+              }} 
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'block';
+              }}
+            />
+            <span 
+              style={{ 
+                color: 'rgba(255, 255, 255, 0.6)', 
+                fontSize: '12px',
+                display: 'none'
+              }}
+            >
+              LOGO
+            </span>
+          </div>
+          
+          {/* Título de la sección */}
+          <div>
+            <h2 style={{ color: '#fff', marginBottom: '5px', fontSize: '24px' }}>Iniciar Sesión</h2>
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px', margin: 0 }}>Accede a tu cuenta</p>
+          </div>
         </div>
         
         <form onSubmit={handleSubmit}>
