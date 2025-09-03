@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/dashboard`)
+      axios.get('https://reportes-sm2g.onrender.com/api/dashboard')
         .then(response => {
           const userData = JSON.parse(localStorage.getItem('user'));
           setUser(userData);
@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
     
     try {
       console.log('Enviando request a backend...');
-      const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/login`, { email, password });
+      const response = await axios.post('https://reportes-sm2g.onrender.com/api/login', { email, password });
       console.log('Respuesta del backend:', response.data);
       
       const { token, user } = response.data;
@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
     
     try {
       console.log('Enviando request a backend...');
-      const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/google`, { 
+      const response = await axios.post('https://reportes-sm2g.onrender.com/api/auth/google', { 
         token: googleToken 
       });
       console.log('Respuesta del backend:', response.data);
