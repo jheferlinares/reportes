@@ -228,8 +228,13 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
     const reportDate = new Date(year, month - 1, day); // month - 1 porque Date usa 0-11
     
     console.log('Fecha original:', date);
-    console.log('Fecha procesada:', reportDate.toISOString());
-    console.log('Fecha local:', reportDate.toLocaleDateString());
+    console.log('Fecha procesada:', reportDate);
+    console.log('Fecha válida:', !isNaN(reportDate.getTime()));
+    
+    if (isNaN(reportDate.getTime())) {
+      console.error('Fecha inválida recibida:', date);
+      return res.status(400).json({ message: 'Fecha inválida' });
+    }
     
     // Verificar si ya existe un reporte para este empleado en esta fecha
     const startOfDay = new Date(year, month - 1, day, 0, 0, 0);
