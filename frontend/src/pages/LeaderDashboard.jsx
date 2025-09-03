@@ -108,12 +108,18 @@ function LeaderDashboard() {
       const reportPromises = employees.map(employee => {
         const reportData = reports[employee._id];
         if (reportData && (reportData.cantidadVentas || reportData.montoVentas || reportData.descripcion)) {
-          console.log('🔍 Empleado:', employee.name);
-          console.log('🔍 Employee ID:', employee._id);
+          console.log('🔍 Empleado completo:', employee);
+          console.log('🔍 Employee._id:', employee._id);
+          console.log('🔍 Tipo de _id:', typeof employee._id);
+          console.log('🔍 _id como string:', String(employee._id));
           console.log('🔍 Datos:', reportData);
           
+          // Asegurar que employeeId sea string válido
+          const employeeId = employee._id && typeof employee._id === 'object' ? employee._id.toString() : String(employee._id);
+          console.log('🔍 employeeId final:', employeeId);
+          
           return axios.post('https://reportes-sm2g.onrender.com/api/reports', {
-            employeeId: employee._id, // ID correcto del empleado
+            employeeId: employeeId, // ID como string
             date: selectedDate, // Enviar como string YYYY-MM-DD
             cantidadVentas: parseInt(reportData.cantidadVentas) || 0,
             montoVentas: parseFloat(reportData.montoVentas) || 0,
