@@ -80,7 +80,6 @@ function LeaderDashboard() {
   };
 
   const handleReportChange = (employeeId, field, value) => {
-    console.log('📝 Cambiando reporte:', { employeeId, field, value, type: typeof employeeId });
     setReports(prev => ({
       ...prev,
       [employeeId]: {
@@ -97,9 +96,6 @@ function LeaderDashboard() {
 
   const saveReports = async () => {
     try {
-      console.log('🔍 Empleados disponibles:', employees);
-      console.log('🔍 Reportes a guardar:', reports);
-      
       if (employees.length === 0) {
         alert('No hay empleados. Primero agrega empleados.');
         return;
@@ -108,19 +104,9 @@ function LeaderDashboard() {
       const reportPromises = employees.map(employee => {
         const reportData = reports[employee._id];
         if (reportData && (reportData.cantidadVentas || reportData.montoVentas || reportData.descripcion)) {
-          console.log('🔍 Empleado completo:', employee);
-          console.log('🔍 Employee._id:', employee._id);
-          console.log('🔍 Tipo de _id:', typeof employee._id);
-          console.log('🔍 _id como string:', String(employee._id));
-          console.log('🔍 Datos:', reportData);
-          
-          // Asegurar que employeeId sea string válido
-          const employeeId = employee._id && typeof employee._id === 'object' ? employee._id.toString() : String(employee._id);
-          console.log('🔍 employeeId final:', employeeId);
-          
           return axios.post('https://reportes-sm2g.onrender.com/api/reports', {
-            employeeId: employeeId, // ID como string
-            date: selectedDate, // Enviar como string YYYY-MM-DD
+            employeeId: String(employee._id),
+            date: selectedDate,
             cantidadVentas: parseInt(reportData.cantidadVentas) || 0,
             montoVentas: parseFloat(reportData.montoVentas) || 0,
             descripcion: reportData.descripcion || '',

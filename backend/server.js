@@ -203,10 +203,18 @@ app.post('/api/employees', authenticateToken, async (req, res) => {
 // Rutas para reportes
 app.post('/api/reports', authenticateToken, async (req, res) => {
   try {
-    const { employeeId, date, cantidadVentas, montoVentas, descripcion, comentarios } = req.body;
+    let { employeeId, date, cantidadVentas, montoVentas, descripcion, comentarios } = req.body;
     
     console.log('=== CREANDO REPORTE ===');
     console.log('Datos recibidos:', { employeeId, date, cantidadVentas, montoVentas, descripcion, comentarios });
+    
+    // Arreglar employeeId si viene como objeto
+    if (typeof employeeId === 'object' && employeeId._id) {
+      console.log('employeeId era objeto, extrayendo _id:', employeeId._id);
+      employeeId = employeeId._id;
+    }
+    
+    console.log('employeeId final:', employeeId);
     
     // Obtener el nombre del empleado
     const employee = await Employee.findById(employeeId);
@@ -223,20 +231,11 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
     console.log('Líder (usuario):', leaderName);
     console.log('Departamento:', req.user.department);
     
-    // Crear fecha correcta sin desfase de zona horaria
+    // Procesar fecha simple
     const [year, month, day] = date.split('-');
-    const reportDate = new Date(year, month - 1, day); // month - 1 porque Date usa 0-11
+    const reportDate = new Date(year, month - 1, day);
     
-    console.log('Fecha original:', date);
-    console.log('Fecha procesada:', reportDate);
-    console.log('Fecha válida:', !isNaN(reportDate.getTime()));
-    
-    if (isNaN(reportDate.getTime())) {
-      console.error('Fecha inválida recibida:', date);
-      return res.status(400).json({ message: 'Fecha inválida' });
-    }
-    
-    // Verificar si ya existe un reporte para este empleado en esta fecha
+    // Verificar si ya existe un reporte
     const startOfDay = new Date(year, month - 1, day, 0, 0, 0);
     const endOfDay = new Date(year, month - 1, day, 23, 59, 59);
     
