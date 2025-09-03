@@ -23,11 +23,11 @@ function LeaderDashboard() {
 
   const loadReports = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports`);
+      const response = await axios.get('https://reportes-sm2g.onrender.com/api/reports');
       setExistingReports(response.data);
       
       // Cargar reportes del día seleccionado
-      const dailyResponse = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports?dateFrom=${selectedDate}&dateTo=${selectedDate}`);
+      const dailyResponse = await axios.get(`https://reportes-sm2g.onrender.com/api/reports?dateFrom=${selectedDate}&dateTo=${selectedDate}`);
       setDailyReports(dailyResponse.data);
       
       // Verificar si el día está bloqueado (tiene reportes guardados)
@@ -55,7 +55,7 @@ function LeaderDashboard() {
 
   const loadEmployees = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/employees`);
+      const response = await axios.get('https://reportes-sm2g.onrender.com/api/employees');
       setEmployees(response.data);
     } catch (error) {
       console.error('Error cargando empleados:', error);
@@ -66,7 +66,7 @@ function LeaderDashboard() {
     if (!newEmployeeName.trim()) return;
     
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/employees`, {
+      const response = await axios.post('https://reportes-sm2g.onrender.com/api/employees', {
         name: newEmployeeName
       });
       
@@ -96,13 +96,15 @@ function LeaderDashboard() {
 
   const saveReports = async () => {
     try {
+      console.log('🔍 API URL:', process.env.REACT_APP_API_URL);
+      console.log('🔍 URL final:', `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports`);
       console.log('Guardando reportes:', reports);
       
       const reportPromises = Object.entries(reports).map(([employeeId, reportData]) => {
         if (reportData.cantidadVentas || reportData.montoVentas || reportData.descripcion) {
           console.log('Enviando reporte para empleado:', employeeId, reportData);
           console.log('Fecha seleccionada:', selectedDate);
-          return axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports`, {
+          return axios.post('https://reportes-sm2g.onrender.com/api/reports', {
             employeeId: employeeId,
             date: selectedDate,
             ...reportData
@@ -659,7 +661,7 @@ function LeaderDashboard() {
               <button
                 onClick={async () => {
                   try {
-                    await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports`, {
+                    await axios.post('https://reportes-sm2g.onrender.com/api/reports', {
                       employeeId: editingReport.employeeId,
                       date: editingReport.date,
                       cantidadVentas: editingReport.cantidadVentas,
