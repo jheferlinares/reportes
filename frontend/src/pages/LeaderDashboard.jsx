@@ -80,6 +80,7 @@ function LeaderDashboard() {
   };
 
   const handleReportChange = (employeeId, field, value) => {
+    console.log('📝 Cambiando reporte:', { employeeId, field, value, type: typeof employeeId });
     setReports(prev => ({
       ...prev,
       [employeeId]: {
@@ -96,19 +97,28 @@ function LeaderDashboard() {
 
   const saveReports = async () => {
     try {
-      console.log('🔍 API URL:', process.env.REACT_APP_API_URL);
-      console.log('🔍 URL final:', `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/reports`);
-      console.log('Guardando reportes:', reports);
+      console.log('🔍 Empleados disponibles:', employees);
+      console.log('🔍 Reportes a guardar:', reports);
+      
+      if (employees.length === 0) {
+        alert('No hay empleados. Primero agrega empleados.');
+        return;
+      }
       
       const reportPromises = Object.entries(reports).map(([employeeId, reportData]) => {
         if (reportData.cantidadVentas || reportData.montoVentas || reportData.descripcion) {
-          console.log('Enviando reporte para empleado ID:', employeeId);
-          console.log('Tipo de employeeId:', typeof employeeId);
-          console.log('Fecha seleccionada:', selectedDate);
-          console.log('Datos del reporte:', reportData);
+          console.log('🔍 employeeId original:', employeeId);
+          console.log('🔍 employeeId tipo:', typeof employeeId);
+          console.log('🔍 employeeId string:', String(employeeId));
+          
+          // Verificar que employeeId sea válido
+          if (!employeeId || employeeId === '[object Object]' || typeof employeeId !== 'string') {
+            console.error('❌ employeeId inválido:', employeeId);
+            return null;
+          }
           
           return axios.post('https://reportes-sm2g.onrender.com/api/reports', {
-            employeeId: String(employeeId), // Asegurar que sea string
+            employeeId: employeeId, // Ya es string
             date: selectedDate,
             cantidadVentas: parseInt(reportData.cantidadVentas) || 0,
             montoVentas: parseFloat(reportData.montoVentas) || 0,
