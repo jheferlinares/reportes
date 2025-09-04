@@ -20,7 +20,12 @@ console.log('JWT Secret:', process.env.JWT_SECRET ? 'CONFIGURADO' : 'NO CONFIGUR
 const connectDB = async () => {
   try {
     console.log('Intentando conectar a MongoDB...');
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/reportes_sistema');
+    // Usar MongoDB local para desarrollo
+    const mongoUri = process.env.NODE_ENV === 'production' 
+      ? process.env.MONGODB_URI 
+      : 'mongodb://localhost:27017/reportes_sistema';
+    
+    await mongoose.connect(mongoUri);
     console.log('✅ Conectado a MongoDB exitosamente');
     
     // Crear usuario de prueba si no existe
