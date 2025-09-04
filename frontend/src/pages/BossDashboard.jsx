@@ -32,7 +32,8 @@ function BossDashboard() {
       console.log('Filtros aplicados:', filters);
       console.log('URL de búsqueda:', `http://localhost:5000/api/reports?${params}`);
       
-      const response = await axios.get(`https://reportes-sm2g.onrender.com/api/reports?${params}`);
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://reportes-sm2g.onrender.com';
+      const response = await axios.get(`${apiUrl}/api/reports?${params}`);
       console.log('Reportes recibidos:', response.data);
       setReports(response.data);
     } catch (error) {

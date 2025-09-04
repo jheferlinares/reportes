@@ -27,7 +27,8 @@ function Register({ onSwitchToLogin }) {
     setError('')
 
     try {
-      await axios.post('https://reportes-sm2g.onrender.com/api/register', formData)
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://reportes-sm2g.onrender.com';
+      await axios.post(`${apiUrl}/api/register`, formData)
       setSuccess(true)
     } catch (error) {
       setError(error.response?.data?.message || 'Error al crear la cuenta')
