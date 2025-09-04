@@ -208,10 +208,14 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
     console.log('=== CREANDO REPORTE ===');
     console.log('Datos recibidos:', { employeeId, date, cantidadVentas, montoVentas, descripcion, comentarios });
     
-    // Arreglar employeeId si viene como objeto
+    // Validar y arreglar employeeId
     if (typeof employeeId === 'object' && employeeId._id) {
-      console.log('employeeId era objeto, extrayendo _id:', employeeId._id);
       employeeId = employeeId._id;
+    }
+    
+    if (!employeeId || employeeId === '[object Object]' || typeof employeeId !== 'string') {
+      console.error('employeeId inválido:', employeeId);
+      return res.status(400).json({ message: 'employeeId inválido' });
     }
     
     console.log('employeeId final:', employeeId);
