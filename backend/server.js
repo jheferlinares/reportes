@@ -231,13 +231,12 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
     console.log('Líder (usuario):', leaderName);
     console.log('Departamento:', req.user.department);
     
-    // Procesar fecha simple
-    const [year, month, day] = date.split('-');
-    const reportDate = new Date(year, month - 1, day);
+    // Crear fecha válida
+    const reportDate = new Date(date + 'T12:00:00.000Z');
     
     // Verificar si ya existe un reporte
-    const startOfDay = new Date(year, month - 1, day, 0, 0, 0);
-    const endOfDay = new Date(year, month - 1, day, 23, 59, 59);
+    const startOfDay = new Date(date + 'T00:00:00.000Z');
+    const endOfDay = new Date(date + 'T23:59:59.999Z');
     
     const existingReport = await Report.findOne({
       employeeId,
