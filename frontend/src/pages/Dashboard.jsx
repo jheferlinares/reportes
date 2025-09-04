@@ -20,6 +20,8 @@ function Dashboard() {
         navigate('/boss', { replace: true });
       } else {
         console.log('Rol no reconocido:', user.role);
+        // Forzar logout si el rol no es válido
+        logout();
       }
     } else {
       console.log('No hay usuario en Dashboard');
