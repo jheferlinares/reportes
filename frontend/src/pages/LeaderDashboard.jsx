@@ -101,20 +101,29 @@ function LeaderDashboard() {
         return;
       }
       
-      const reportPromises = employees.map(employee => {
+      const reportPromises = [];
+      
+      for (const employee of employees) {
         const reportData = reports[employee._id];
         if (reportData && (reportData.cantidadVentas || reportData.montoVentas || reportData.descripcion)) {
-          return axios.post('https://reportes-sm2g.onrender.com/api/reports', {
-            employeeId: String(employee._id),
-            date: selectedDate,
-            cantidadVentas: parseInt(reportData.cantidadVentas) || 0,
-            montoVentas: parseFloat(reportData.montoVentas) || 0,
-            descripcion: reportData.descripcion || '',
-            comentarios: reportData.comentarios || ''
-          });
+          // Verificar que employee._id sea válido
+          if (!employee._id || employee._id === '[object Object]') {
+            console.error('Employee ID inválido:', employee);
+            continue;
+          }
+          
+          reportPromises.push(
+            axios.post('https://reportes-sm2g.onrender.com/api/reports', {
+              employeeId: employee._id,
+              date: selectedDate,
+              cantidadVentas: parseInt(reportData.cantidadVentas) || 0,
+              montoVentas: parseFloat(reportData.montoVentas) || 0,
+              descripcion: reportData.descripcion || '',
+              comentarios: reportData.comentarios || ''
+            })
+          );
         }
-        return null;
-      }).filter(Boolean);
+      }
       
       console.log('Número de reportes a enviar:', reportPromises.length);
       
