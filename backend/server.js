@@ -207,15 +207,16 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
     
     console.log('=== CREANDO REPORTE ===');
     console.log('Datos recibidos:', { employeeId, date, cantidadVentas, montoVentas, descripcion, comentarios });
+    console.log('employeeId recibido:', employeeId, 'tipo:', typeof employeeId, 'longitud:', employeeId?.length);
     
     // Validar y arreglar employeeId
     if (typeof employeeId === 'object' && employeeId._id) {
       employeeId = employeeId._id;
     }
     
-    if (!employeeId || employeeId === '[object Object]' || typeof employeeId !== 'string') {
-      console.error('employeeId inválido:', employeeId);
-      return res.status(400).json({ message: 'employeeId inválido' });
+    if (!employeeId || employeeId === '[object Object]' || typeof employeeId !== 'string' || employeeId.length !== 24) {
+      console.error('employeeId inválido:', employeeId, 'tipo:', typeof employeeId, 'longitud:', employeeId?.length);
+      return res.status(400).json({ message: `employeeId inválido: ${employeeId}` });
     }
     
     console.log('employeeId final:', employeeId);
