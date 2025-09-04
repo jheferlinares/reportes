@@ -103,15 +103,19 @@ function LeaderDashboard() {
       
       const reportPromises = [];
       
-      for (const employee of employees) {
+      // Filtrar solo empleados con IDs válidos
+      const validEmployees = employees.filter(emp => 
+        emp._id && 
+        typeof emp._id === 'string' && 
+        emp._id !== '[object Object]' &&
+        emp._id.length === 24 // MongoDB ObjectId length
+      );
+      
+      console.log('🔍 Empleados válidos:', validEmployees.length, 'de', employees.length);
+      
+      for (const employee of validEmployees) {
         const reportData = reports[employee._id];
         if (reportData && (reportData.cantidadVentas || reportData.montoVentas || reportData.descripcion)) {
-          // Verificar que employee._id sea válido
-          if (!employee._id || employee._id === '[object Object]') {
-            console.error('Employee ID inválido:', employee);
-            continue;
-          }
-          
           reportPromises.push(
             axios.post('https://reportes-sm2g.onrender.com/api/reports', {
               employeeId: employee._id,
@@ -125,22 +129,29 @@ function LeaderDashboard() {
         }
       }
       
-      console.log('Número de reportes a enviar:', reportPromises.length);
-      
       if (reportPromises.length === 0) {
         alert('No hay datos para guardar');
         return;
       }
       
-      await Promise.all(reportPromises);
-      alert('Reportes guardados exitosamente');
+      // Usar Promise.allSettled para manejar errores individuales
+      const results = await Promise.allSettled(reportPromises);
       
-      // Bloquear el día y salir del modo edición
-      setDayLocked(true);
-      setIsEditMode(false);
+      const successful = results.filter(r => r.status === 'fulfilled').length;
+      const failed = results.filter(r => r.status === 'rejected').length;
       
-      // Recargar reportes para mostrar los guardados
-      loadReports();
+      if (successful > 0) {
+        alert(`${successful} reportes guardados exitosamente${failed > 0 ? ` (${failed} fallaron)` : ''}`);
+        
+        // Bloquear el día y salir del modo edición
+        setDayLocked(true);
+        setIsEditMode(false);
+        
+        // Recargar reportes para mostrar los guardados
+        loadReports();
+      } else {
+        alert('Error: No se pudo guardar ningún reporte');
+      }
     } catch (error) {
       console.error('Error guardando reportes:', error);
       alert('Error al guardar reportes: ' + (error.response?.data?.message || error.message));
