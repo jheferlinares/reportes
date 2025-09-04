@@ -112,7 +112,7 @@ function LeaderDashboard() {
             }}
           >
             <span style={{ fontSize: '18px' }}>+</span>
-            Añadir Empleado
+            a pues
           </button>
         </div>
 
@@ -154,7 +154,7 @@ function LeaderDashboard() {
                   cursor: 'pointer'
                 }}
               >
-                Guardar
+                tu mama
               </button>
               <button 
                 onClick={() => { setShowAddEmployee(false); setNewEmployeeName(''); }}
@@ -169,7 +169,7 @@ function LeaderDashboard() {
                   cursor: 'pointer'
                 }}
               >
-                Cancelar
+                tu awuelo
               </button>
             </div>
           </div>
@@ -183,7 +183,7 @@ function LeaderDashboard() {
             borderRadius: '12px',
             marginBottom: '20px'
           }}>
-            <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>Empleados del Departamento:</h3>
+            <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>tu papa</h3>
             <div style={{ display: 'grid', gap: '15px' }}>
               {employees.map(employee => (
                 <div key={employee._id} style={{
