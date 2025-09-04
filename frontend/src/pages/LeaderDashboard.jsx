@@ -14,6 +14,7 @@ function LeaderDashboard() {
   const [editingReport, setEditingReport] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [dayLocked, setDayLocked] = useState(false);
+  const [editingEmployeeId, setEditingEmployeeId] = useState(null);
 
   // Cargar empleados y reportes desde la API
   useEffect(() => {
@@ -92,6 +93,33 @@ function LeaderDashboard() {
   const enableEditMode = () => {
     setIsEditMode(true);
     setDayLocked(false);
+  };
+  
+  const editEmployee = (employeeId) => {
+    setEditingEmployeeId(employeeId);
+  };
+  
+  const saveEmployeeReport = async (employeeId) => {
+    try {
+      const reportData = reports[employeeId];
+      if (reportData && (reportData.cantidadVentas || reportData.montoVentas || reportData.descripcion)) {
+        await axios.post('https://reportes-sm2g.onrender.com/api/reports', {
+          employeeId: employeeId,
+          date: selectedDate,
+          cantidadVentas: parseInt(reportData.cantidadVentas) || 0,
+          montoVentas: parseFloat(reportData.montoVentas) || 0,
+          descripcion: reportData.descripcion || '',
+          comentarios: reportData.comentarios || ''
+        });
+        alert('Reporte guardado exitosamente');
+        setEditingEmployeeId(null);
+        loadReports();
+      } else {
+        alert('Agrega al menos un dato para guardar');
+      }
+    } catch (error) {
+      alert('Error al guardar: ' + (error.response?.data?.message || error.message));
+    }
   };
 
   const saveReports = async () => {
@@ -458,10 +486,68 @@ function LeaderDashboard() {
         )}
         
         <h2 style={{ color: 'white', marginBottom: '20px', fontSize: '24px' }}>
-          {dayLocked && !isEditMode ? 'Reportes Guardados' : 'Crear/Editar Reportes'}
+          {editingEmployeeId ? 'Editando Empleado' : 'Empleados'}
         </h2>
-        <div style={{ display: 'grid', gap: '20px', }}>
-          {employees.map(employee => (
+        
+        {/* Vista de lista de empleados */}
+        {!editingEmployeeId && (
+          <div style={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+            padding: '25px', 
+            borderRadius: '12px',
+            marginBottom: '20px'
+          }}>
+            <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>Selecciona un empleado para editar:</h3>
+            <div style={{ display: 'grid', gap: '15px' }}>
+              {employees.map(employee => (
+                <div key={employee._id} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '15px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '40px',
+                      height: '40px',
+                      backgroundColor: '#667eea',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: 'bold'
+                    }}>
+                      {employee.name.charAt(0).toUpperCase()}
+                    </div>
+                    <span style={{ fontSize: '18px', fontWeight: '500' }}>{employee.name}</span>
+                  </div>
+                  <button
+                    onClick={() => editEmployee(employee._id)}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Editar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Vista de edición individual */}
+        {editingEmployeeId && (
+          <div style={{ display: 'grid', gap: '20px' }}>
+            {employees.filter(emp => emp._id === editingEmployeeId).map(employee => (
             <div key={employee._id} style={{ 
               backgroundColor: 'rgba(255, 255, 255, 0.95)', 
               padding: '25px', 
@@ -586,9 +672,46 @@ function LeaderDashboard() {
               </div>
             </div>
           ))}
-        </div>
+        )}
+        
+        {/* Botones para edición individual */}
+        {editingEmployeeId && (
+          <div style={{ textAlign: 'center', marginTop: '30px', display: 'flex', gap: '15px', justifyContent: 'center' }}>
+            <button 
+              onClick={() => saveEmployeeReport(editingEmployeeId)}
+              style={{ 
+                padding: '16px 32px', 
+                backgroundColor: '#28a745', 
+                color: 'white', 
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Guardar Reporte
+            </button>
+            <button 
+              onClick={() => setEditingEmployeeId(null)}
+              style={{ 
+                padding: '16px 32px', 
+                backgroundColor: '#6c757d', 
+                color: 'white', 
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Cancelar
+            </button>
+          </div>
+        )}
 
-        {(!dayLocked || isEditMode) && (
+        {/* Botón para guardar todos (solo si no está editando individualmente) */}
+        {!editingEmployeeId && (!dayLocked || isEditMode) && (
           <div style={{ textAlign: 'center', marginTop: '30px' }}>
             <button 
               onClick={saveReports}
@@ -605,7 +728,7 @@ function LeaderDashboard() {
                 transition: 'all 0.2s'
               }}
             >
-              {isEditMode ? ' Actualizar Reportes' : ' Guardar Reportes del Día'}
+              Guardar Todos los Reportes
             </button>
           </div>
         )}
