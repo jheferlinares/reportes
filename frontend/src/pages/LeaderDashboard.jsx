@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import axios from 'axios'
 
+// Force rebuild - v2.0
+
 function LeaderDashboard() {
   const { user, logout } = useAuth();
   const [employees, setEmployees] = useState([]);
